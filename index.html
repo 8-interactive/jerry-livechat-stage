@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Jerry LiveChat Stage 測試頁面，用於驗證聊天小工具載入。">
+	<title>Jerry-LiveChat-Stage</title>
+</head>
+<body>
+	<h1>Jerry LiveChat Stage 測試頁面</h1>
+	<main>
+		<p>這個頁面用來測試並驗證 <strong>Eight Chat</strong> 小工具在 Staging 環境是否能正確載入。</p>
+		<ul>
+			<li>頁面載入後會自動插入聊天啟動腳本 <code>launch.js</code>。</li>
+			<li>若小工具未顯示，請開啟瀏覽器主控台 (F12) 查看是否有錯誤。</li>
+			<li>確認網路請求是否有成功載入 <code>https://stage-live-chat-console.no8.io/launch.js</code>。</li>
+		</ul>
+		<div id="chat-status" style="margin-top:1rem;padding:.75rem;border:1px solid #ccc;background:#f9f9f9;border-radius:6px;font-size:14px;">初始化檢查聊天腳本載入狀態中...</div>
+	</main>
+	<script type="application/javascript">
+	window.eightChatConfig = { encryptedOrgId: 'vYu@@OiiCmHoTIw==', env: 'staging', launchLocation: 'https://stage-live-chat-console.no8.io' };
+	(function () {
+		var eightChatId = 'eight-chat-script';
+		if (document.getElementById(eightChatId)) {
+			return;
+		}
+		var firstScriptElement = document.getElementsByTagName('script')[0];
+		var eightChatScriptElement = document.createElement('script');
+		eightChatScriptElement.id = eightChatId;
+		eightChatScriptElement.src = window.eightChatConfig.launchLocation +'/launch.js';
+		eightChatScriptElement.onload = function(){
+			eightChatScriptElement.dataset.loaded = 'true';
+		};
+		firstScriptElement.parentNode.insertBefore(eightChatScriptElement, firstScriptElement);
+	})();
+	</script>
+	<script>
+	(function pollForChat(){
+		var statusEl = document.getElementById('chat-status');
+		if(!statusEl) return;
+		if (window.EightChat || (document.getElementById('eight-chat-script') && document.getElementById('eight-chat-script').dataset.loaded === 'true')) {
+			statusEl.textContent = '聊天腳本已載入並初始化 (Staging)。';
+			statusEl.style.borderColor = '#4caf50';
+			statusEl.style.background = '#e8f5e9';
+		} else {
+			statusEl.textContent = '聊天腳本載入中...';
+			setTimeout(pollForChat, 800);
+		}
+	})();
+	</script>
+</body>
+</html>
